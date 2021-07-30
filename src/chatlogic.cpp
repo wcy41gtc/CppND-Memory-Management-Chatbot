@@ -23,6 +23,8 @@ ChatLogic::ChatLogic()
     // add pointer to chatlogic so that chatbot answers can be passed on to the GUI
     _chatBot->SetChatLogicHandle(this);
 
+    std::cout << "ChatLogic Constructor" << std::endl;
+
     ////
     //// EOF STUDENT CODE
 }
@@ -33,8 +35,10 @@ ChatLogic::~ChatLogic()
     ////
 
     // delete chatbot instance
+    std::cout << "ChatbotLogic Destructor" << std::endl;
+    std::cout << "Chatbot Destructor Called in ChatbotLogic Destructor" << std::endl;
     delete _chatBot;
-
+    // the small bug is in graphnode.cpp, where chatbot is deleted in the destructor a node
     // delete all nodes
     for (auto it = std::begin(_nodes); it != std::end(_nodes); ++it)
     {

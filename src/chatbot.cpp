@@ -39,6 +39,7 @@ ChatBot::~ChatBot()
     {
         delete _image;
         _image = NULL;
+        std::cout << "Image deallocated" << std::endl;
     }
 }
 

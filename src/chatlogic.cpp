@@ -35,22 +35,22 @@ ChatLogic::~ChatLogic()
     ////
 
     // delete chatbot instance
-    std::cout << "ChatbotLogic Destructor" << std::endl;
-    std::cout << "Chatbot Destructor Called in ChatbotLogic Destructor" << std::endl;
-    delete _chatBot;
+    // std::cout << "ChatbotLogic Destructor" << std::endl;
+    // std::cout << "Chatbot Destructor Called in ChatbotLogic Destructor" << std::endl;
+    // delete _chatBot;
     // the small bug is in graphnode.cpp, where chatbot is deleted in the destructor a node
-    // smart unique pointer is used for _nodes, not need to delete _nodes explicitly
+    // smart unique pointer is used for node, not need to delete _nodes explicitly
     // delete all nodes
     // for (auto it = std::begin(_nodes); it != std::end(_nodes); ++it)
     // {
     //     delete *it;
     // }
-
+    // smart unique pointer is used for edge, not need to delete _edges explicitly
     // delete all edges
-    for (auto it = std::begin(_edges); it != std::end(_edges); ++it)
-    {
-        delete *it;
-    }
+    // for (auto it = std::begin(_edges); it != std::end(_edges); ++it)
+    // {
+    //     delete *it;
+    // }
 
     ////
     //// EOF STUDENT CODE
@@ -165,17 +165,17 @@ void ChatLogic::LoadAnswerGraphFromFile(std::string filename)
                             auto childNode = std::find_if(_nodes.begin(), _nodes.end(), [&childToken](std::unique_ptr<GraphNode> &node) { return node->GetID() == std::stoi(childToken->second); });
 
                             // create new edge
-                            GraphEdge *edge = new GraphEdge(id);
+                            std::unique_ptr<GraphEdge> edge = std::make_unique<GraphEdge>(id);
                             edge->SetChildNode(childNode->get());
                             edge->SetParentNode(parentNode->get());
-                            _edges.push_back(edge);
+                            // _edges.push_back(std::move(edge));
 
                             // find all keywords for current node
                             AddAllTokensToElement("KEYWORD", tokens, *edge);
 
                             // store reference in child node and parent node
-                            (*childNode)->AddEdgeToParentNode(edge);
-                            (*parentNode)->AddEdgeToChildNode(edge);
+                            (*childNode)->AddEdgeToParentNode(edge.get());
+                            (*parentNode)->AddEdgeToChildNode(std::move(edge));
                         }
 
                         ////
@@ -219,10 +219,13 @@ void ChatLogic::LoadAnswerGraphFromFile(std::string filename)
             }
         }
     }
+    ChatBot chatBot("../images/chatbot.png");
+    SetChatbotHandle(&chatBot); // pass chatBot to _chatBot handled by ChatLogic
+    chatBot.SetChatLogicHandle(this); //connect chatBot to ChatLogic
 
     // add chatbot to graph root node
-    _chatBot->SetRootNode(rootNode);
-    rootNode->MoveChatbotHere(_chatBot);
+    chatBot.SetRootNode(rootNode);
+    rootNode->MoveChatbotHere(std::move(chatBot));
     
     ////
     //// EOF STUDENT CODE
@@ -233,9 +236,9 @@ void ChatLogic::SetPanelDialogHandle(ChatBotPanelDialog *panelDialog)
     _panelDialog = panelDialog;
 }
 
-void ChatLogic::SetChatbotHandle(ChatBot *chatbot)
+void ChatLogic::SetChatbotHandle(ChatBot *chatBot)
 {
-    _chatBot = chatbot;
+    _chatBot = chatBot;
 }
 
 void ChatLogic::SendMessageToChatbot(std::string message)

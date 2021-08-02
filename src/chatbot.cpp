@@ -49,9 +49,9 @@ ChatBot::~ChatBot()
 ChatBot::ChatBot(const ChatBot &source) {
     std::cout << "ChatBot Copy Constructor" << std::endl;
     _image = new wxBitmap(*source._image); //used wxBitmap copy constructor
-    this->SetChatLogicHandle(source._chatLogic);
-    this->SetRootNode(source._rootNode);
-    this->SetCurrentNode(source._currentNode);
+    _chatLogic = source._chatLogic;
+    _rootNode = source._rootNode;
+    _currentNode = source._currentNode;
 }
 
 // copy assignment constructor
@@ -62,19 +62,20 @@ ChatBot &ChatBot::operator=(const ChatBot &source) {
     }
     delete _image;
     _image = new wxBitmap(*source._image); //used wxBitmap copy constructor
-    this->SetChatLogicHandle(source._chatLogic);
-    this->SetRootNode(source._rootNode);
-    this->SetCurrentNode(source._currentNode);
+    _chatLogic = source._chatLogic;
+    _rootNode = source._rootNode;
+    _currentNode = source._currentNode;
     return *this;
 }
 
 // move constructor
 ChatBot::ChatBot(ChatBot &&source) {
     std::cout << "ChatBot Move Constructor" << std::endl;
-    _image = source._image; //used wxBitmap copy constructor
-    this->SetChatLogicHandle(source._chatLogic);
-    this->SetRootNode(source._rootNode);
-    this->SetCurrentNode(source._currentNode);
+    _image = source._image;
+    _chatLogic = source._chatLogic;
+    _rootNode = source._rootNode;
+    _currentNode = source._currentNode;
+    _chatLogic->SetChatbotHandle(this);
     source._image = NULL;
     source._chatLogic = nullptr;
     source._rootNode = nullptr;
@@ -88,10 +89,11 @@ ChatBot &ChatBot::operator=(ChatBot &&source) {
         return *this;
     }
     delete _image;
-    _image = source._image; //used wxBitmap copy constructor
-    this->SetChatLogicHandle(source._chatLogic);
-    this->SetRootNode(source._rootNode);
-    this->SetCurrentNode(source._currentNode);
+    _image = source._image;
+    _chatLogic = source._chatLogic;
+    _rootNode = source._rootNode;
+    _currentNode = source._currentNode;
+    _chatLogic->SetChatbotHandle(this);
     source._image = NULL;
     source._chatLogic = nullptr;
     source._rootNode = nullptr;
